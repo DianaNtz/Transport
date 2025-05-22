@@ -29,3 +29,44 @@ def first(D):
 
 un=np.e**(-100*x**2/2)
 
+t=t0
+#Runge Kutta time integration loop
+for j in range(0,nt):
+    ua=np.e**(-100*(x-t)**2/2)
+
+
+    k1=-dt*first(un)
+    k2=-dt*first(un+0.5*k1)
+    k3=-dt*first(un+0.5*k2)
+    k4=-dt*first(un+k3)
+
+    un=un+(k1+2*k2+2*k3+k4)/6
+
+
+    if(j%1==0):
+        ax1 = plt.subplots(1, sharex=True, figsize=(10,5))
+        plt.plot(x,ua,color='deeppink',linestyle='-',linewidth=3.0,label="$u_{a} (t,x)$")
+        plt.plot(x,un,color='blue',linestyle='--',linewidth=3.0,label="$u_{n} (t,x)$")
+        plt.xlabel("x",fontsize=16)
+        plt.ylim([0,1.2])
+        #plt.ylim([-1,1])
+        plt.xlim([-1,1])
+        #plt.xlim([0,2*np.pi])
+        plt.xticks(fontsize= 16)
+        plt.yticks(fontsize= 16)
+        plt.text(0.7, 0.75,"t=".__add__(str(round(t,2))),fontsize=19 )
+        plt.legend(loc=2,fontsize=19,handlelength=3,frameon=False)
+        filename ='bla{0:.0f}.png'.format(int(j/1))
+        filenames.append(filename)
+        plt.savefig(filename,dpi=150)
+        plt.close()
+
+
+    t=t+dt
+#creating animation
+with imageio.get_writer('transport.gif', mode='I') as writer:
+    for filename in filenames:
+        image = imageio.imread(filename)
+        writer.append_data(image)
+for filename in set(filenames):
+    os.remove(filename)
